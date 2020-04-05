@@ -111,6 +111,6 @@ func BenchmarkSort100000(b *testing.B) {
 // conclusion
 // for a shorter amount elements being tested, our custom sort perform better than the native one.
 // but as the amount of elements being tested increased, the native go is performing better.
-// this is the very 'basic' reason why benchmark is go is designed.
+// this is the very 'basic' reason why benchmark in go is designed.
 // but at the very heart of it, benchmark are there to testing the performance in the unit test level
 // not in the integration or functional one
