@@ -1,15 +1,18 @@
 package controllers
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/guntutur/go-microservices/mvc/services"
 	"github.com/guntutur/go-microservices/mvc/utils"
 	"net/http"
 	"strconv"
 )
 
-func GetUser(resp http.ResponseWriter, req *http.Request) {
-	userId, err := strconv.ParseInt(req.URL.Query().Get("user_id"), 10, 64)
+func GetUser(c *gin.Context) {
+	// know the difference
+	// path variable = c.Param("<defined in mapUrls entry>")
+	// query parameter = c.Query("<defined in mapUrls entry>")
+	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		// Just return the Bad Request to the client.
 		apiErr := &utils.ApplicationError{
@@ -17,23 +20,17 @@ func GetUser(resp http.ResponseWriter, req *http.Request) {
 			StatusCode: http.StatusBadRequest,
 			Code:       "bad_request",
 		}
-
-		jsonValue, _ := json.Marshal(apiErr)
-		resp.WriteHeader(apiErr.StatusCode)
-		resp.Write(jsonValue)
+		utils.ResponseError(c, apiErr)
 		return
 	}
 
 	user, apiErr := services.UserService.GetUser(userId)
 	if apiErr != nil {
 		// Handle the error and return to client
-		jsonValue, _ := json.Marshal(apiErr)
-		resp.WriteHeader(apiErr.StatusCode)
-		resp.Write(jsonValue)
+		utils.ResponseError(c, apiErr)
 		return
 	}
 
 	// return user to client
-	jsonValue, _ := json.Marshal(user)
-	resp.Write(jsonValue)
+	utils.Response(c, http.StatusOK, user)
 }
